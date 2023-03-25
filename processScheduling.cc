@@ -100,11 +100,13 @@ bool operator<(const _aux &a, const _aux &b)
 vector<int> SPN(const vector<_process> &plist)
 {
     vector<int> res(plist.size(),0);
+    vector<bool> vis(plist.size(),0);
     vector<_aux> auxlist(plist.size());
     for(int i=0;i<auxlist.size();i++)
         auxlist[i]={plist[i].first,plist[i].second,i};
     priority_queue<_aux> pq;
     pq.push(auxlist[0]);
+    vis[0]=1;
     int T=auxlist[0].first;
     int fin=0;
     while(fin!=plist.size())
@@ -116,19 +118,40 @@ vector<int> SPN(const vector<_process> &plist)
         // add new process to pq.
         for(int i=0;i<plist.size();i++)
         {
-            if(res[i]==0&&plist[i].first<=T+c.second&&plist[i].first>T)
+            if(res[i]==0&&vis[i]==0&&plist[i].first<=T+c.second&&plist[i].first>=T)
+            {
                 pq.push(auxlist[i]);
+                vis[i]=1;
+            }
         }
         T+=c.second;
-        if(fin==plist.size())   break;
-        if(pq.empty())
+        if(pq.empty()&&fin!=plist.size())
         {
             auto it=lower_bound(plist.begin(),plist.end(),make_pair(T,0),[](_process a,_process b){
                 return a.first<b.first;
             })-plist.begin();
+            while(vis[it]==0) it++;
             pq.push(auxlist[it]);
+            vis[it]=1;
             T=plist[it].first;
         }
+    }
+    return res;
+}
+
+vector<int> SRT(const vector<_process> &plist)
+{
+    vector<int> res(plist.size(),0);
+    vector<_aux> auxlist(plist.size());
+    for(int i=0;i<auxlist.size();i++)
+        auxlist[i]={plist[i].first,plist[i].second,i};
+    priority_queue<_aux> pq;
+    pq.push(auxlist[0]);
+    int T=auxlist[0].first;
+    int fin=0;
+    while(fin!=plist.size())
+    {
+        
     }
     return res;
 }
