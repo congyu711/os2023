@@ -31,12 +31,14 @@ vector<int> FIFO(const vector<_process> &plist)
 vector<int> RR(const vector<_process> &plist)
 {
     vector<int> res(plist.size());
+    vector<bool> inrunning(plist.size(),0);
     const int rsize=5;
     vector<_process> remaintime=plist;
     int fin=0;
     int T=plist.front().first;
     list<int> running;
     running.push_back(0);
+    inrunning[0]=1;
     while(fin!=plist.size())
     {
         for(auto p=running.rbegin();p!=running.rend();++p)
@@ -48,7 +50,8 @@ vector<int> RR(const vector<_process> &plist)
                 // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
                 // the 10000 times i think c++ stl sucks...
                 res[*p]=T+timepiece-remaintime[*p].first;
-                remaintime[*p].second-=timepiece;
+                remaintime[*p].second-=timepiece;   // this must be done separately since *p may change
+                // inrunning[*(next(p).base())]=0;
                 running.erase(next(p).base());
             }
             else    remaintime[*p].second-=timepiece;
@@ -56,9 +59,11 @@ vector<int> RR(const vector<_process> &plist)
             for(int i=0;i<plist.size();i++)
             {
                 if(remaintime[i].second==plist[i].second&&     // haven't been added to running list.
-                plist[i].first>T&&plist[i].first<=T+timepiece)
+                inrunning[i]==0&&
+                plist[i].first>=T&&plist[i].first<=T+timepiece)
                 {
                     running.push_back(i);
+                    inrunning[i]=1;
                     p=running.rbegin();
                 }
             }
@@ -71,6 +76,7 @@ vector<int> RR(const vector<_process> &plist)
             })-plist.begin();
             while(remaintime[it].second==0)    it++;
             running.push_back(it);
+            inrunning[it]=1;
             T=plist[it].first;
         }
 
@@ -128,17 +134,18 @@ vector<int> SPN(const vector<_process> &plist)
 }
 int main()
 {
-    auto data=genProcess(5000);
+    const int __width=8;
+    auto data=genProcess(500);
     // for(auto e:data)
     //     cout<<e.first<<' '<<e.second<<'\n';
     
-    // auto fifo=FIFO(data);
-    // auto rr=RR(data);
-    // auto spn=SPN(data);
-    // cout<<"--------------------\n";
-    // cout<<setw(5)<<"fifo"<<setw(5)<<"rr"<<setw(5)<<"spn"<<'\n';
-    // for(int i=0;i<fifo.size();i++)
-    // {
-    //     cout<<setw(5)<<fifo[i]<<setw(5)<<rr[i]<<setw(5)<<spn[i]<<'\n';
-    // }
+    auto fifo=FIFO(data);
+    auto rr=RR(data);
+    auto spn=SPN(data);
+    cout<<"--------------------\n";
+    cout<<setw(__width)<<"fifo"<<setw(__width)<<"rr"<<setw(__width)<<"spn"<<'\n';
+    for(int i=0;i<fifo.size();i++)
+    {
+        cout<<setw(__width)<<fifo[i]<<setw(__width)<<rr[i]<<setw(__width)<<spn[i]<<'\n';
+    }
 }
