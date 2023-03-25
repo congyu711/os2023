@@ -139,6 +139,47 @@ vector<int> SPN(const vector<_process> &plist)
     return res;
 }
 
+vector<int> HRRN(const vector<_process> &plist)
+{
+    vector<int> res(plist.size(),0);
+    vector<_aux> auxlist(plist.size());
+    for(int i=0;i<auxlist.size();i++)
+        auxlist[i]={plist[i].first,plist[i].second,i};
+    // Currently I don't want to use binom heap just for log time update...
+    // a brute force method:
+    int T=plist[0].first;
+    int fin=0;
+    while(1)
+    {
+        // decide run which process
+        int tmp=-1;
+        double maxR=-1.0;
+        for(int i=0;i<plist.size();i++)
+        {
+            if(auxlist[i].first<=T&&auxlist[i].second!=0)
+            {
+                double r=1.0*(T-auxlist[i].first)/auxlist[i].second;
+                if(r>=maxR)
+                {
+                    maxR=r;
+                    tmp=i;
+                }
+            }
+        }
+        if(tmp==-1)
+        {
+            T++;
+            continue;
+        }
+        fin++;
+        T+=auxlist[tmp].second;
+        res[tmp]=T;
+        auxlist.at(tmp).second=0;
+        if(fin==plist.size())   break;
+    }
+    return res;
+}
+
 vector<int> SRT(const vector<_process> &plist)
 {
     vector<int> res(plist.size(),0);
@@ -186,10 +227,11 @@ int main()
     auto rr=RR(data);
     auto spn=SPN(data);
     auto srt=SRT(data);
+    auto hrrn=HRRN(data);
     cout<<"--------------------\n";
-    cout<<setw(__width)<<"fifo"<<setw(__width)<<"rr"<<setw(__width)<<"spn"<<setw(__width)<<"spn"<<'\n';
+    cout<<setw(__width)<<"fifo"<<setw(__width)<<"rr"<<setw(__width)<<"spn"<<setw(__width)<<"srt"<<setw(__width)<<"hrrn"<<'\n';
     for(int i=0;i<fifo.size();i++)
     {
-        cout<<setw(__width)<<fifo[i]<<setw(__width)<<rr[i]<<setw(__width)<<spn[i]<<setw(__width)<<srt[i]<<'\n';
+        cout<<setw(__width)<<fifo[i]<<setw(__width)<<rr[i]<<setw(__width)<<spn[i]<<setw(__width)<<srt[i]<<setw(__width)<<hrrn[i]<<'\n';
     }
 }
