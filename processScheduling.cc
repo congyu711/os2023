@@ -48,7 +48,6 @@ vector<int> RR(const vector<_process> &plist)
             {
                 fin++;
                 // https://stackoverflow.com/questions/1830158/how-to-call-erase-with-a-reverse-iterator
-                // the 10000 times i think c++ stl sucks...
                 res[*p]=T+timepiece-remaintime[*p].first;
                 remaintime[*p].second-=timepiece;   // this must be done separately since *p may change
                 // inrunning[*(next(p).base())]=0;
@@ -145,7 +144,7 @@ vector<int> HRRN(const vector<_process> &plist)
     vector<_aux> auxlist(plist.size());
     for(int i=0;i<auxlist.size();i++)
         auxlist[i]={plist[i].first,plist[i].second,i};
-    // Currently I don't want to use binom heap just for log time update...
+    // Currently I don't want to use binomial heap just for log time update...
     // a brute force method:
     int T=plist[0].first;
     int fin=0;
@@ -186,7 +185,7 @@ vector<int> SRT(const vector<_process> &plist)
     vector<_aux> auxlist(plist.size());
     for(int i=0;i<auxlist.size();i++)
         auxlist[i]={plist[i].first,plist[i].second,i};
-    // Currently I don't want to use binom heap just for log time update...
+    // Currently I don't want to use binomial heap just for log time update...
     // a brute force method:
     int T=plist[0].first;
     int fin=0;
