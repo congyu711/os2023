@@ -215,6 +215,59 @@ vector<int> SRT(const vector<_process> &plist)
     }
     return res;
 }
+
+// feedback with n RQs and 2^i timepiece for the i th queue.
+vector<int> Feedback(const vector<_process> &plist)
+{
+    vector<int> res(plist.size(),0);
+    vector<bool> vis(plist.size());
+    auto remaintime=plist;
+    const int N=5;
+    queue<int> q[N];
+    int T=plist[0].first;
+    int fin=0;
+    q[0].push(0);
+    vis[0]=1;
+    while(1)
+    {
+        int __q=0;                      // select a queue.
+        while(__q<N&&q[__q].empty())   __q++;
+        if(__q==N)
+        {
+            T++;
+            continue;
+        }
+        int top=q[__q].front();
+        q[__q].pop();
+        int timepiece=(1<<__q);
+        if(remaintime[top].second<=timepiece)
+        {
+            timepiece=remaintime[top].second;
+            res[top]=T+timepiece;
+            fin++;
+        }
+        else
+        {
+            remaintime[top].second-=timepiece;
+            if(__q==N-1)    q[__q].push(top);
+            else q[__q+1].push(top);
+        }
+        if(fin==plist.size())   break;
+        // add new processes to queues;
+        bool added=0;
+        for(int i=0;i<plist.size();i++)
+        {
+            if(plist[i].first<=T+timepiece&&vis[i]==0)
+            {
+                added=1;
+                q[0].push(i);
+                vis[i]=1;
+            }
+        }
+        T+=timepiece;
+    }
+    return res;
+}
 int main()
 {
     const int __width=8;
@@ -227,10 +280,21 @@ int main()
     auto spn=SPN(data);
     auto srt=SRT(data);
     auto hrrn=HRRN(data);
+    auto feedback=Feedback(data);
     cout<<"--------------------\n";
-    cout<<setw(__width)<<"fifo"<<setw(__width)<<"rr"<<setw(__width)<<"spn"<<setw(__width)<<"srt"<<setw(__width)<<"hrrn"<<'\n';
+    cout<<setw(__width)<<"fifo"<<setw(__width)<<"rr"<<setw(__width)<<"spn"
+        <<setw(__width)<<"srt"<<setw(__width)<<"hrrn"<<setw(__width)<<"fb"<<'\n';
     for(int i=0;i<fifo.size();i++)
     {
-        cout<<setw(__width)<<fifo[i]<<setw(__width)<<rr[i]<<setw(__width)<<spn[i]<<setw(__width)<<srt[i]<<setw(__width)<<hrrn[i]<<'\n';
+        cout<<setw(__width)<<fifo[i]<<setw(__width)<<rr[i]<<setw(__width)
+            <<spn[i]<<setw(__width)<<srt[i]<<setw(__width)<<hrrn[i]<<setw(__width)<<feedback[i]<<'\n';
     }
+    auto avg=[&](vector<int> arr)->double
+    {
+        double res=0;
+        for(auto e:arr) res+=e;
+        return res/arr.size();
+    };
+    cout<<setw(__width)<<avg(fifo)<<setw(__width)<<avg(rr)<<setw(__width)
+            <<avg(spn)<<setw(__width)<<avg(srt)<<setw(__width)<<avg(hrrn)<<setw(__width)<<avg(feedback)<<'\n';
 }
