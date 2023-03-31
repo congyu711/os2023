@@ -1,3 +1,0 @@
-[submodule "deadlockDetector/kdtree-cpp"]
-	path = deadlockDetector/kdtree-cpp
-	url = git@github.com:congyu711/kdtree-cpp.git
