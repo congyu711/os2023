@@ -123,6 +123,8 @@ int main()
             if(running_proc==nullptr)
                 cerr<<"no running proc\n";
             allproc.remove(running_proc);
+            for(auto e:running_proc->reqres)
+                avil_res[e.first]+=e.second;
             delete running_proc;
             running_proc=nullptr;
             if(scheduling()==-1)
