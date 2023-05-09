@@ -1,7 +1,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-// arrive time. last time.
+// arrive time. running time.
 using _process=pair<int, int>;
 
 vector<_process> genProcess(int n)
